@@ -1,4 +1,4 @@
-import { Common } from "@src/components/Common";
+import { Common } from "@/components/Common";
 
 export const Test = () => {
     return (
