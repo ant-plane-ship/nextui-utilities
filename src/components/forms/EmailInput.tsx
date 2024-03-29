@@ -1,33 +1,58 @@
 import { z } from 'zod';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { ValidatedInputValue, ValidatedStringInput } from './';
+import { InputProps } from '@nextui-org/react';
 
 type Props = {
+    /** 必須フラグ */
     isRequired?: boolean;
+    /** 無効化フラグ */
     isDisabled?: boolean;
+    /** ラベル。指定したくない場合には空文字('')を指定 */
     label?: string;
+    /** エラーメッセージ */
     errorMessage?: string;
-    inputValue: ValidatedInputValue<string>;
-    onChange: (inputValue: ValidatedInputValue<string>) => void;
+    /** 。詳細はxxx参照 */
+    classNames?: InputProps['classNames'];
+    /** 値 */
+    value: string;
+    /** 値が変更された場合のコールバック関数  */
+    onChange: (value: string) => void;
 }
 
-export const EmailInput = ({ isRequired, isDisabled, label, errorMessage, inputValue, onChange }: Props) => {
+/** ｘｘｘｘｘｘｘｘ */
+export const EmailInput = ({
+    isRequired,
+    isDisabled,
+    label = 'メールアドレス',
+    errorMessage = '不正なメールアドレスです',
+    classNames,
+    value,
+    onChange
+}: Props) => {
+    const [inputValue, setInputValue] = useState<ValidatedInputValue<string>>({ value, invalid: !!isRequired && !value, message: '' });
 
     const schema = useMemo(() => {
-        return z.string().email(errorMessage ? errorMessage : '不正なメールアドレスです');
-    }, [errorMessage]);
+        const schema = z.string().email(errorMessage);
+        return isRequired ? schema : z.union([z.literal(''), schema]);
+    }, [isRequired, errorMessage]);
+
+    const handleChange = useCallback((inputValue: ValidatedInputValue<string>) => {
+        setInputValue(inputValue);
+        onChange(inputValue.value);
+    }, [onChange]);
 
     return (
         <ValidatedStringInput
-            testid="email-input"
             type="email"
             name="email"
+            classNames={classNames}
             isRequired={isRequired}
             isDisabled={isDisabled}
-            label={label ? label : 'メールアドレス'}
+            label={label}
             inputValue={inputValue}
             schema={schema}
-            onChange={onChange}
+            onChange={handleChange}
         />
     )
 }

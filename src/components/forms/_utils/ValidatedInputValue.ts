@@ -6,8 +6,8 @@ export type ValidatedInputValue<T extends ValueType = string> = {
     message: string;
 }
 
-export const createValidatedInputValue = <T extends ValueType>(value: T, required?: boolean): ValidatedInputValue<T> => ({
+export const createInitialValidatedInputValue = <T extends ValueType>(value: T): ValidatedInputValue<T> => ({
     value,
-    invalid: !!required && !value,
+    invalid: false,
     message: ''
 });

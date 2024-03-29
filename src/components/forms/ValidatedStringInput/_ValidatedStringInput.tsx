@@ -1,35 +1,30 @@
-import { FocusEvent, useCallback, useMemo } from 'react';
+import { FocusEvent, useCallback } from 'react';
 import { Input, InputProps } from '@nextui-org/input';
-import { ZodString, z } from 'zod';
-import { ValidatedInputValue, createValidatedInputValue } from '../_utils/ValidatedInputValue';
+import { ZodLiteral, ZodString, ZodUnion, z } from 'zod';
+import { ValidatedInputValue, createInitialValidatedInputValue } from '../_utils/ValidatedInputValue';
 import { Message } from './Message';
 import { Label } from './Label';
 
 type Props = Omit<InputProps, 'label' | 'value' | 'errorMessage' | 'isInvalid' | 'validationState' | 'onChange' | 'onValueChange'> & {
-    testid?: string;
     label?: string;
     /** テスト */
     inputValue: ValidatedInputValue<string>;
-    schema?: ZodString;
+    schema?: ZodString | ZodUnion<[ZodLiteral<string>, ZodString]>;
     onChange: (inputValue: ValidatedInputValue<string>) => void;
 }
 
 /**
  * NextUIの<a href="https://nextui.org/docs/components/input" target="_blank">Inputコンポーネント</a>
  */
-export const ValidatedStringInput = ({ testid = 'validated-string-input', isRequired, label, inputValue, schema = z.string(), onChange, onBlur, ...props }: Props) => {
-
-    const _schema = useMemo(() => {
-        return isRequired ? schema.min(1) : z.union([z.literal(''), schema]);
-    }, [isRequired, schema]);
+export const ValidatedStringInput = ({ label, inputValue, schema = z.string(), onChange, onBlur, ...props }: Props) => {
 
     const handleChange = useCallback((text: string) => {
-        onChange(createValidatedInputValue(text, isRequired));
-    }, [isRequired, onChange]);
+        onChange(createInitialValidatedInputValue(text));
+    }, [onChange]);
 
     const handleBlur = useCallback(async (event: FocusEvent) => {
         const newInputValue = { value: inputValue.value, invalid: false, message: '' };
-        const result = await _schema.safeParseAsync(inputValue.value);
+        const result = await schema.safeParseAsync(inputValue.value);
         newInputValue.invalid = !result.success;
         if (!result.success) {
             newInputValue.message = result.error.issues.reduce((previousResult, current) => {
@@ -39,19 +34,17 @@ export const ValidatedStringInput = ({ testid = 'validated-string-input', isRequ
 
         onChange(newInputValue);
         onBlur && onBlur(event);
-    }, [inputValue, _schema, onChange, onBlur]);
+    }, [inputValue, schema, onChange, onBlur]);
 
     return (
-        <div data-testid={testid} className="w-full h-20">
-            <Input
-                label={label ? <Label value={label} /> : undefined}
-                value={inputValue.value}
-                errorMessage={<Message value={inputValue.message} />}
-                isInvalid={inputValue.invalid && !!inputValue.message}
-                onValueChange={handleChange}
-                onBlur={handleBlur}
-                {...props}
-            />
-        </div>
+        <Input
+            label={label ? <Label value={label} /> : undefined}
+            value={inputValue.value}
+            errorMessage={<Message value={inputValue.message} />}
+            isInvalid={inputValue.invalid && !!inputValue.message}
+            onValueChange={handleChange}
+            onBlur={handleBlur}
+            {...props}
+        />
     )
 }

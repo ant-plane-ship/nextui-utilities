@@ -6,8 +6,8 @@ type Props = {
 
 export const Label = ({ value }: Props) => {
     return (
-        <div data-testid="label">
+        <span data-testid="label">
             {value}
-        </div>
+        </span>
     )
 }
