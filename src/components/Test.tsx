@@ -6,10 +6,7 @@ export const Test = () => {
         <div>
             <div>テスト</div>
             <Common />
-            <EmailInput
-                inputValue={{ value: '', invalid: false, message: '' }}
-                onChange={() => { }}
-            />
+            <EmailInput value="" onChange={() => { }} />
         </div>
     )
 }

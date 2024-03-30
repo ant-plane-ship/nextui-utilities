@@ -1,22 +1,31 @@
 {
   "name": "nextui-utilities",
-  "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.umd.cjs",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.umd.cjs"
+    }
+  },
+  "files": ["dist"],
   "scripts": {
-    "dev": "vite",
+    "dev": "storybook dev -p 6006",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
     "test": "playwright test -c playwright-ct.config.ts",
-    "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@nextui-org/react": "^2.2.10",
     "framer-motion": "^11.0.20",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "dependencies": {
     "react-icons": "^5.0.1",
     "zod": "^3.22.4"
   },
@@ -46,6 +55,7 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
+    "vite-plugin-dts": "^3.8.1",
     "vite-tsconfig-paths": "^4.3.2"
   }
 }
